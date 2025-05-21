@@ -1,6 +1,11 @@
 #ifndef MALLOC_H
 # define MALLOC_H
 
+# define TINY_ALLOC 512
+# define SMALL_ALLOC 4096
+
+# include <stdbool.h>
+
 typedef struct s_chunk
 {
     int available;
@@ -10,11 +15,27 @@ typedef struct s_chunk
     int freed;
 }               t_chunk;
 
+typedef struct  s_page
+{
+    __uint128_t available;
+    t_chunk *head;
+    void    *heap;
+}               t_page;
+
 typedef struct s_heap
 {
-    t_chunk *tiny;
-    t_chunk *small;
+    t_page tiny;
+    t_page small;
     t_chunk *large;
+    bool initialized;
 }               t_heap;
+
+
+
+void *split_chunks(t_page *page, __uint32_t allocation);
+void *big_allocation(int allocation_size, t_chunk **large);
+void *sort_allocations(t_heap *heap, int size);
+
+extern t_heap g_heap;
 
 #endif
