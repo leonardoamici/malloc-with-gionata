@@ -127,6 +127,7 @@ void show_alloc_mem(t_heap *heap)
 
 void *ft_malloc(size_t size)
 {
+    //jonathan se size è zero per qualche cazzo di motivo malloc alloca una memoria allineata all x byte (16 sul mac). boh, va implementato
     if (g_heap.initialized == false)
     {
         init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC));
