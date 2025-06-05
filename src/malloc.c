@@ -36,12 +36,17 @@ void init_allocation(t_page *pages, int size)
 void *split_chunks(t_page *page, __uint32_t allocation)
 {
     t_chunk *temp = page->head;
+    // set the best chunk to the last one : TODO
     t_chunk *best = temp;
+
+    if (allocation == 0)
+        allocation = 1;
 
     while (temp)
     {
-        if (temp->size > allocation)
+        if (temp->size > allocation && temp->available && temp->size < best->size)
             best = temp;
+        printf("temp->size %d, best->size %d\n", temp->size, best->size);
         temp = temp->next;
     }
 
@@ -72,7 +77,7 @@ void print_memories(t_page *page, char *str)
     printf("%s : %p\n", str, page->head);
     while (temp)
     {
-        printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->available ? " (free)" : "");
+        printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
         temp = temp->next;
     }
     // return (size);
@@ -145,16 +150,23 @@ void *ft_malloc(size_t size)
 
 int main()
 {
-    void *a = ft_malloc(100);
+    void *a = ft_malloc(1);
     void *b = ft_malloc(120);
-    void *c = ft_malloc(130);
+    // void *c = ft_malloc(130);
 
     show_alloc_mem(&g_heap);
 
+    ft_free(a);
     ft_free(b);
-    ft_free(c);
 
-    printf ("after free e anche %lu\n", sizeof(t_chunk));
+    printf ("\n\n");
+    show_alloc_mem(&g_heap);
+    printf ("\n\n");
+
+
+    a = ft_malloc(1);
+
+    printf("after malloc %p\n", a);
     show_alloc_mem(&g_heap);
 }
 

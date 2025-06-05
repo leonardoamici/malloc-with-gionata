@@ -8,7 +8,7 @@ static void merge_free_chunks(t_chunk **head)
 
     while (current && current->next)
     {
-        if (current->available && current->next->available)
+        if (current->freed && current->next->freed)
         {
             current->size += sizeof(t_chunk) + current->next->size;
             current->next = current->next->next;
