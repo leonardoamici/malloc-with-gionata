@@ -33,11 +33,21 @@ void init_allocation(t_page *pages, int size)
     pages->head->available = 0;
 }
 
+// t_chunk *last_chunk(t_page *page)
+// {
+//     t_chunk *temp = page->head;
+
+//     while (temp && temp->next)
+//         temp = temp->next;
+
+//     return temp;
+// }
+
 void *split_chunks(t_page *page, __uint32_t allocation)
 {
     t_chunk *temp = page->head;
     // set the best chunk to the last one : TODO
-    t_chunk *best = temp->next ? temp->next : temp;
+    t_chunk *best = temp;
 
     if (allocation == 0)
         allocation = 1;
@@ -154,6 +164,7 @@ int main()
 {
     void *a = ft_malloc(1);
     void *b = ft_malloc(120);
+    void *c = ft_malloc(100);
     // void *c = ft_malloc(130);
 
     show_alloc_mem(&g_heap);
@@ -165,6 +176,7 @@ int main()
     show_alloc_mem(&g_heap);
 
     a = ft_malloc(1);
+    b = ft_malloc(10);
 
     printf("\nAfter malloc:\n\n");
     show_alloc_mem(&g_heap);
