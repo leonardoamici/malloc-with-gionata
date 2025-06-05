@@ -63,20 +63,19 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     return (best->head);
 }
 
-int print_memories(t_page *page, char *str)
+void print_memories(t_page *page, char *str)
 {
     t_chunk *temp;
-    int size = 0;
+    // int size = 0;
 
     temp = page->head;
-    printf("%s - %p\n", str, page->head);
+    printf("%s : %p\n", str, page->head);
     while (temp)
     {
-        printf("%p - %p : %d bytes\n", temp->head, temp->head + temp->size, temp->size);
-        size += temp->size;
+        printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->available ? " (free)" : "");
         temp = temp->next;
     }
-    return (size);
+    // return (size);
 }
 
 void *big_allocation(size_t allocation_size, t_chunk **large)
@@ -146,13 +145,16 @@ void *ft_malloc(size_t size)
 
 int main()
 {
-    void *a = ft_malloc(10);
+    void *a = ft_malloc(100);
+    void *b = ft_malloc(120);
+    void *c = ft_malloc(130);
 
     show_alloc_mem(&g_heap);
 
-    ft_free(a);
+    ft_free(b);
+    ft_free(c);
 
-    printf ("after free\n");
+    printf ("after free e anche %lu\n", sizeof(t_chunk));
     show_alloc_mem(&g_heap);
 }
 

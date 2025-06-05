@@ -2,43 +2,83 @@
 
 extern t_heap g_heap;
 
+static void merge_free_chunks(t_chunk **head)
+{
+    t_chunk *current = *head;
+
+    while (current && current->next)
+    {
+        if (current->available && current->next->available)
+        {
+            current->size += sizeof(t_chunk) + current->next->size;
+            current->next = current->next->next;
+        }
+        else
+            current = current->next;
+    }
+}
+
+// static void unmap_large_chunk(t_chunk **head, t_chunk *chunk)
+// {
+//     t_chunk *current = *head;
+//     t_chunk *prev = NULL;
+
+//     while (current)
+//     {
+//         if (current == chunk)
+//         {
+//             if (prev)
+//                 prev->next = current->next;
+//             else
+//                 *head = current->next;
+
+//             munmap((void *)current, current->size + sizeof(t_chunk));
+//             return;
+//         }
+//         current = current->next;
+//     }
+// }
+
+
 void ft_free(void *ptr)
 {
-    t_chunk *chunk;
-
     if (!ptr)
-        return;
+    return;
 
-    chunk = g_heap.tiny.head;
-    while (chunk)
-    {
-        if (chunk->head == ptr)
+    t_chunk *current = g_heap.tiny.head;
+    while (current)
+    {   
+        if (current->head == ptr)
         {
-            chunk->available = 1;
-            chunk->freed = 1;
+            current->available = 1;
+            current->freed = 1;
+            merge_free_chunks(&g_heap.tiny.head);
             return;
         }
-        chunk = chunk->next;
+        current = current->next;
     }
-    chunk = g_heap.small.head;
-    while (chunk)
-    {
-        if (chunk->head == ptr)
+
+    current = g_heap.small.head;
+    while (current)
+    {   
+        if (current->head == ptr)
         {
-            chunk->available = 1;
-            chunk->freed = 1;
+            current->available = 1;
+            current->freed = 1;
+            merge_free_chunks(&g_heap.small.head);
             return;
         }
-        chunk = chunk->next;
+        current = current->next;
     }
-    chunk = g_heap.large;
-    while (chunk)
-    {
-        if (chunk->head == ptr)
-        {
-            munmap((void *)chunk, chunk->size + sizeof(t_chunk));
-            return;
-        }
-        chunk = chunk->next;
-    } 
+
+    // current = g_heap.large;
+    // while (current)
+    // {
+    //     if (current->head == ptr)
+    //     {
+    //         unmap_large_chunk(&g_heap.large, current);
+    //         return;
+    //     }
+    //     current = current->next;
+    // }
 }
