@@ -1,8 +1,4 @@
-#include "malloc.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
+#include "../includes/malloc.h"
 
 t_heap g_heap;
 
@@ -83,7 +79,7 @@ int print_memories(t_page *page, char *str)
     return (size);
 }
 
-void *big_allocation(int allocation_size, t_chunk **large)
+void *big_allocation(size_t allocation_size, t_chunk **large)
 {
     int nbr_pages;
     void *mem = NULL;
@@ -103,7 +99,7 @@ void *big_allocation(int allocation_size, t_chunk **large)
     return ((*large)->head);
 }
 
-void *sort_allocations(t_heap *heap, int size)
+void *sort_allocations(t_heap *heap, size_t size)
 {
     if (size > SMALL_ALLOC)
         return (big_allocation(size, &heap->large));
@@ -129,7 +125,7 @@ void show_alloc_mem(t_heap *heap)
     print_memories(&heap->small, "SMALL");
 }
 
-void *ft_malloc(int size)
+void *ft_malloc(size_t size)
 {
     //jonathan se size è zero per qualche cazzo di motivo malloc alloca una memoria allineata all x byte (16 sul mac). boh, va implementato
     if (g_heap.initialized == false)
@@ -140,17 +136,24 @@ void *ft_malloc(int size)
     }
     //printf("hellos\n");
     //sort_allocations(&heap, 17000);
-    sort_allocations(&g_heap, 12);
-    sort_allocations(&g_heap, 100);
-    sort_allocations(&g_heap, 600);
-    show_alloc_mem(&g_heap);
-    return (0);
+    // sort_allocations(&g_heap, size);
+    // sort_allocations(&g_heap, 100);
+    // sort_allocations(&g_heap, 600);
+    // show_alloc_mem(&g_heap);
+    return sort_allocations(&g_heap, size);
 }
 
 
 int main()
 {
-    ft_malloc(0);
+    void *a = ft_malloc(10);
+
+    show_alloc_mem(&g_heap);
+
+    ft_free(a);
+
+    printf ("after free\n");
+    show_alloc_mem(&g_heap);
 }
 
 //for small 14 = (512 + 24) * 100 -> 13.08| 112

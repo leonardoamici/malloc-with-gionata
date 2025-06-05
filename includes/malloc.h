@@ -5,6 +5,11 @@
 # define SMALL_ALLOC 4096
 
 # include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/mman.h>
+# include <unistd.h>
+# include <string.h>
 
 typedef struct s_chunk
 {
@@ -33,8 +38,9 @@ typedef struct s_heap
 
 
 void *split_chunks(t_page *page, __uint32_t allocation);
-void *big_allocation(int allocation_size, t_chunk **large);
-void *sort_allocations(t_heap *heap, int size);
+void *big_allocation(size_t allocation_size, t_chunk **large);
+void *sort_allocations(t_heap *heap, size_t size);
+void ft_free(void *ptr);
 
 extern t_heap g_heap;
 
