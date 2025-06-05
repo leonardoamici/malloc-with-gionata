@@ -37,7 +37,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
 {
     t_chunk *temp = page->head;
     // set the best chunk to the last one : TODO
-    t_chunk *best = temp;
+    t_chunk *best = temp->next ? temp->next : temp;
 
     if (allocation == 0)
         allocation = 1;
@@ -45,8 +45,9 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     while (temp)
     {
         if (temp->size > allocation && temp->available && temp->size < best->size)
+        {
             best = temp;
-        printf("temp->size %d, best->size %d\n", temp->size, best->size);
+        }
         temp = temp->next;
     }
 
@@ -61,6 +62,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     new->available = 1;
 
     best->available = 0;
+    best->freed = 0;
     best->next = new;
     best->size = allocation;
 
@@ -159,14 +161,12 @@ int main()
     ft_free(a);
     ft_free(b);
 
-    printf ("\n\n");
+    printf ("\nAfter free:\n\n");
     show_alloc_mem(&g_heap);
-    printf ("\n\n");
-
 
     a = ft_malloc(1);
 
-    printf("after malloc %p\n", a);
+    printf("\nAfter malloc:\n\n");
     show_alloc_mem(&g_heap);
 }
 
