@@ -1,8 +1,8 @@
 #ifndef MALLOC_H
 # define MALLOC_H
 
-# define TINY_ALLOC 512
-# define SMALL_ALLOC 4096
+# define TINY_ALLOC getpagesize() / 8
+# define SMALL_ALLOC getpagesize()
 
 # include <stdbool.h>
 # include <stdio.h>

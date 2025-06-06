@@ -2,18 +2,6 @@
 
 t_heap g_heap;
 
-/*void *test()
-{
-    void *addr  = NULL;
-    char *test = NULL;
-    int *test2 = NULL;
-    addr = mmap(NULL, getpagesize() * 13, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    printf("%d\n", getpagesize());
-    test = (char *)addr;
-    test2 = (int *)addr + sizeof(char *);
-    return ((void *)test2);
-}*/
-
 void init_allocation(t_page *pages, int size)
 {
     void *mem = NULL;
@@ -57,7 +45,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
         if (temp->size > allocation && temp->available)
         {
             best = temp;
-            printf("best set as %p", best);
+            // printf("best set as %p", best);
         }
         temp = temp->next;
     }
@@ -81,24 +69,32 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     return (best->head);
 }
 
-void print_memories(t_chunk *page, char *str)
+unsigned int print_memories(t_chunk *page, char *str)
 {
     if (!page)
     {
         printf("%s : No memory allocated\n", str);
-        return;
+        return 0;
     }
 
     t_chunk *temp;
     temp = page;
+    unsigned int total_size = 0;
 
     printf("%s : %p\n", str, page);
 
     while (temp)
     {
-        printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
-        temp = temp->next;
+        if (!temp->available)
+        {
+            printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
+            total_size += temp->size;
+            temp = temp->next;
+        }
+        else
+            return total_size;
     }
+    return total_size;
 }
 
 void *big_allocation(size_t allocation_size, t_chunk **large)
@@ -143,9 +139,14 @@ int calculate_impaginations(int alloc_size)
 
 void show_alloc_mem(t_heap *heap)
 {
-    print_memories(heap->tiny.head, "TINY");
-    print_memories(heap->small.head, "SMALL");
-    print_memories(heap->large, "LARGE");
+    unsigned int total_size = 0;
+
+    total_size += print_memories(heap->tiny.head, "TINY");
+    total_size += print_memories(heap->small.head, "SMALL");
+    total_size += print_memories(heap->large, "LARGE");
+
+    // Per Leo, il totale funziona, da rivedere questa soluzione però, al momemnto è una soluzione rapida e non mi convince molto, esiste sicuramente un modo migliore
+    printf("Total : %d bytes\n", total_size);
 }
 
 void *ft_malloc(size_t size)
@@ -166,7 +167,7 @@ int main()
     void *b = ft_malloc(120);
     void *c = ft_malloc(100);
     void *d = ft_malloc(1000);
-    void *e = ft_malloc(10000);
+    void *e = ft_malloc(5000);
     // void *c = ft_malloc(130);
 
     show_alloc_mem(&g_heap);
@@ -181,15 +182,19 @@ int main()
     show_alloc_mem(&g_heap);
 
     // ft_free(b);
-    a = ft_malloc(1);
+    // a = ft_malloc(1);
+    e = ft_malloc(10000);
 
-    // printf("\nAfter malloc:\n\n");
-    // show_alloc_mem(&g_heap);
+    printf("\nAfter malloc:\n\n");
+    show_alloc_mem(&g_heap);
+
+    ft_free(e);
+
+    printf("\nAfter free:\n\n");
+    show_alloc_mem(&g_heap);
+
+
 }
-
-//for small 14 = (512 + 24) * 100 -> 13.08| 112
-
-//for medium 100 = 40960 |  101
 
 //for large, anything bigger than medium. this isn't preallocated
 
