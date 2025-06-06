@@ -54,7 +54,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
 
     while (temp)
     {
-        if (temp->size > allocation && temp->available && temp->size < best->size)
+        if (temp->size > allocation && temp->available)
         {
             best = temp;
         }
@@ -80,19 +80,24 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     return (best->head);
 }
 
-void print_memories(t_page *page, char *str)
+void print_memories(t_chunk *page, char *str)
 {
-    t_chunk *temp;
-    // int size = 0;
+    if (!page)
+    {
+        printf("%s : No memory allocated\n", str);
+        return;
+    }
 
-    temp = page->head;
-    printf("%s : %p\n", str, page->head);
+    t_chunk *temp;
+    temp = page;
+
+    printf("%s : %p\n", str, page);
+
     while (temp)
     {
         printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
         temp = temp->next;
     }
-    // return (size);
 }
 
 void *big_allocation(size_t allocation_size, t_chunk **large)
@@ -137,8 +142,9 @@ int calculate_impaginations(int alloc_size)
 
 void show_alloc_mem(t_heap *heap)
 {
-    print_memories(&heap->tiny, "TINY");
-    print_memories(&heap->small, "SMALL");
+    print_memories(heap->tiny.head, "TINY");
+    print_memories(heap->small.head, "SMALL");
+    print_memories(heap->large, "LARGE");
 }
 
 void *ft_malloc(size_t size)
@@ -165,21 +171,25 @@ int main()
     void *a = ft_malloc(1);
     void *b = ft_malloc(120);
     void *c = ft_malloc(100);
+    void *d = ft_malloc(1000);
+    void *e = ft_malloc(10000);
     // void *c = ft_malloc(130);
 
     show_alloc_mem(&g_heap);
 
     ft_free(a);
     ft_free(b);
+    ft_free(c);
+    ft_free(d);
+    ft_free(e);
 
     printf ("\nAfter free:\n\n");
     show_alloc_mem(&g_heap);
 
-    a = ft_malloc(1);
-    b = ft_malloc(10);
+    // ft_free(b);
 
-    printf("\nAfter malloc:\n\n");
-    show_alloc_mem(&g_heap);
+    // printf("\nAfter malloc:\n\n");
+    // show_alloc_mem(&g_heap);
 }
 
 //for small 14 = (512 + 24) * 100 -> 13.08| 112

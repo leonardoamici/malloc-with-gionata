@@ -18,33 +18,21 @@ static void merge_free_chunks(t_chunk **head)
     }
 }
 
-// static void unmap_large_chunk(t_chunk **head, t_chunk *chunk)
-// {
-//     t_chunk *current = *head;
-//     t_chunk *prev = NULL;
-
-//     while (current)
-//     {
-//         if (current == chunk)
-//         {
-//             if (prev)
-//                 prev->next = current->next;
-//             else
-//                 *head = current->next;
-
-//             munmap((void *)current, current->size + sizeof(t_chunk));
-//             return;
-//         }
-//         current = current->next;
-//     }
-// }
-
-
-void ft_free(void *ptr)
+static void unmap_large_chunk(t_chunk **head, t_chunk *chunk)
 {
-    if (!ptr)
-    return;
+    t_chunk *current = *head;
 
+    if (current == chunk)
+    {
+        munmap((void *)current, current->size + sizeof(t_chunk));
+        g_heap.large = NULL;
+        return;
+    }
+}
+
+
+void sort_free(void *ptr)
+{
     t_chunk *current = g_heap.tiny.head;
     while (current)
     {   
@@ -71,14 +59,21 @@ void ft_free(void *ptr)
         current = current->next;
     }
 
-    // current = g_heap.large;
-    // while (current)
-    // {
-    //     if (current->head == ptr)
-    //     {
-    //         unmap_large_chunk(&g_heap.large, current);
-    //         return;
-    //     }
-    //     current = current->next;
-    // }
+    
+    current = g_heap.large;
+    if (current->head == ptr)
+    {
+        unmap_large_chunk(&g_heap.large, current);
+        return;
+    }
+}
+
+void ft_free(void *ptr)
+{
+    if (!ptr)
+        return;
+
+    // pthread_mutex_lock(&g_heap.mutex);
+    sort_free(ptr);
+    // pthread_mutex_unlock(&g_heap.mutex);
 }

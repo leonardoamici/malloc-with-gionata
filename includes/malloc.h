@@ -10,6 +10,7 @@
 # include <sys/mman.h>
 # include <unistd.h>
 # include <string.h>
+# include <pthread.h>
 
 typedef struct s_chunk
 {
@@ -33,6 +34,7 @@ typedef struct s_heap
     t_page small;
     t_chunk *large;
     bool initialized;
+    // pthread_mutex_t mutex;
 }               t_heap;
 
 
