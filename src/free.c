@@ -43,7 +43,7 @@ static void merge_free_chunks(t_chunk **head)
 void ft_free(void *ptr)
 {
     if (!ptr)
-    return;
+        return;
 
     t_chunk *current = g_heap.tiny.head;
     while (current)

@@ -33,21 +33,21 @@ void init_allocation(t_page *pages, int size)
     pages->head->available = 0;
 }
 
-// t_chunk *last_chunk(t_page *page)
-// {
-//     t_chunk *temp = page->head;
+t_chunk *last_chunk(t_page *page)
+{
+    t_chunk *temp = page->head;
 
-//     while (temp && temp->next)
-//         temp = temp->next;
+    while (temp->next)
+        temp = temp->next;
 
-//     return temp;
-// }
+    return temp;
+}
 
 void *split_chunks(t_page *page, __uint32_t allocation)
 {
     t_chunk *temp = page->head;
     // set the best chunk to the last one : TODO
-    t_chunk *best = temp;
+    t_chunk *best = last_chunk(page);
 
     if (allocation == 0)
         allocation = 1;
@@ -57,6 +57,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
         if (temp->size > allocation && temp->available && temp->size < best->size)
         {
             best = temp;
+            printf("best set as %p", best);
         }
         temp = temp->next;
     }
@@ -68,7 +69,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     new = (void *)((char *)best->head + allocation);
     new->head = (void *)((char *)new + sizeof(t_chunk));
     new->size = best->size - (allocation + sizeof(t_chunk));
-    new->next = NULL;
+    new->next =  best->next;
     new->available = 1;
 
     best->available = 0;
@@ -143,19 +144,12 @@ void show_alloc_mem(t_heap *heap)
 
 void *ft_malloc(size_t size)
 {
-    //jonathan se size è zero per qualche cazzo di motivo malloc alloca una memoria allineata all x byte (16 sul mac). boh, va implementato
     if (g_heap.initialized == false)
     {
         init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC));
         init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC));
         g_heap.initialized = true;
     }
-    //printf("hellos\n");
-    //sort_allocations(&heap, 17000);
-    // sort_allocations(&g_heap, size);
-    // sort_allocations(&g_heap, 100);
-    // sort_allocations(&g_heap, 600);
-    // show_alloc_mem(&g_heap);
     return sort_allocations(&g_heap, size);
 }
 
@@ -176,7 +170,6 @@ int main()
     show_alloc_mem(&g_heap);
 
     a = ft_malloc(1);
-    b = ft_malloc(10);
 
     printf("\nAfter malloc:\n\n");
     show_alloc_mem(&g_heap);
