@@ -69,7 +69,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     return (best->head);
 }
 
-unsigned int print_memories(t_chunk *page, char *str)
+unsigned int print_memories(t_chunk *page, char *str, unsigned int total_size)
 {
     if (!page)
     {
@@ -79,7 +79,7 @@ unsigned int print_memories(t_chunk *page, char *str)
 
     t_chunk *temp;
     temp = page;
-    unsigned int total_size = 0;
+    // unsigned int total_size = 0;
 
     printf("%s : %p\n", str, page);
 
@@ -141,9 +141,9 @@ void show_alloc_mem(t_heap *heap)
 {
     unsigned int total_size = 0;
 
-    total_size += print_memories(heap->tiny.head, "TINY");
-    total_size += print_memories(heap->small.head, "SMALL");
-    total_size += print_memories(heap->large, "LARGE");
+    total_size = print_memories(heap->tiny.head, "TINY", total_size);
+    total_size = print_memories(heap->small.head, "SMALL", total_size);
+    total_size = print_memories(heap->large, "LARGE", total_size);
 
     // Per Leo, il totale funziona, da rivedere questa soluzione però, al momemnto è una soluzione rapida e non mi convince molto, esiste sicuramente un modo migliore
     printf("Total : %d bytes\n", total_size);
