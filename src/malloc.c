@@ -14,7 +14,7 @@ t_heap g_heap;
     return ((void *)test2);
 }*/
 
-void init_allocation(t_page *pages, int size)
+void init_allocation(t_page *pages, int size, int type)
 {
     void *mem = NULL;
 
@@ -30,7 +30,8 @@ void init_allocation(t_page *pages, int size)
     //printf("inner hellos 3 \n");
     pages->head->next = NULL;
     pages->head->freed = 0;
-    pages->head->available = 0;
+    pages->head->available = 1;
+    pages->head->type = type;
 }
 
 t_chunk *last_chunk(t_page *page)
@@ -71,6 +72,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     new->size = best->size - (allocation + sizeof(t_chunk));
     new->next =  best->next;
     new->available = 1;
+    new->type = best->type;
 
     best->available = 0;
     best->freed = 0;
@@ -117,6 +119,7 @@ void *big_allocation(size_t allocation_size, t_chunk **large)
     (*large)->next = NULL;
     (*large)->freed = 0;
     (*large)->available = 0;
+    (*large)->type = LARGE;
 
     return ((*large)->head);
 }
@@ -152,8 +155,8 @@ void *ft_malloc(size_t size)
 {
     if (g_heap.initialized == false)
     {
-        init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC));
-        init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC));
+        init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC), TINY);
+        init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC), SMALL);
         g_heap.initialized = true;
     }
     return sort_allocations(&g_heap, size);

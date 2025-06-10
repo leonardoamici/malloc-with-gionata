@@ -4,6 +4,10 @@
 # define TINY_ALLOC 512
 # define SMALL_ALLOC 4096
 
+# define TINY 0
+# define SMALL 1
+# define LARGE 2
+
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -19,6 +23,7 @@ typedef struct s_chunk
     struct s_chunk *next;
     void *head;
     int freed;
+    int type;
 }               t_chunk;
 
 typedef struct  s_page
