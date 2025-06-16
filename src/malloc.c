@@ -72,8 +72,11 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     return (best->head);
 }
 
-unsigned int print_memories(t_chunk *page, char *str, unsigned int total_size)
+unsigned int print_memories(t_chunk *page, char *str)
 {
+    size_t allocation_size;
+
+    allocation_size = 0;
     if (!page)
     {
         printf("%s : No memory allocated\n", str);
@@ -91,13 +94,11 @@ unsigned int print_memories(t_chunk *page, char *str, unsigned int total_size)
         if (!temp->available)
         {
             printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
-            total_size += temp->size;
-            temp = temp->next;
+            allocation_size += temp->size;
         }
-        else
-            return total_size;
+        temp = temp->next;
     }
-    return total_size;
+    return allocation_size;
 }
 
 void *big_allocation(size_t allocation_size, t_chunk **large)
@@ -145,9 +146,9 @@ void show_alloc_mem(t_heap *heap)
 {
     unsigned int total_size = 0;
 
-    total_size = print_memories(heap->tiny.head, "TINY", total_size);
-    total_size = print_memories(heap->small.head, "SMALL", total_size);
-    total_size = print_memories(heap->large, "LARGE", total_size);
+    total_size += print_memories(heap->tiny.head, "TINY");
+    total_size += print_memories(heap->small.head, "SMALL");
+    total_size += print_memories(heap->large, "LARGE");
 
     // Per Leo, il totale funziona, da rivedere questa soluzione però, al momemnto è una soluzione rapida e non mi convince molto, esiste sicuramente un modo migliore
     printf("Total : %d bytes\n", total_size);
@@ -187,7 +188,11 @@ int main()
 
     // ft_free(b);
     // a = ft_malloc(1);
+    e = ft_malloc(100);
     e = ft_malloc(10000);
+    e = ft_malloc(12);
+    e = ft_malloc(1111);
+
 
     printf("\nAfter malloc:\n\n");
     show_alloc_mem(&g_heap);
