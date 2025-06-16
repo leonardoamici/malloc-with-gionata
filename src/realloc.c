@@ -34,7 +34,7 @@ int sort_type(int size)
     else if (size > TINY_ALLOC)
         return (SMALL);
     return (TINY);
-}
+}b 
 
 t_chunk *resize_allocation(t_chunk *alloc, size_t size)
 {
@@ -64,15 +64,10 @@ void    copy_mem(t_chunk *source, t_chunk *dest, size_t amount)
 
 t_chunk *switch_allocation_type(t_chunk *alloc, size_t size)
 {
-    //allocates a new memory with the indicated size and in the dedicated block, then copies the memory it can
-    void *new_alloc = sort_allocations;
+    void *new_alloc = sort_allocations(size);
 
-
-    //mis cojones estan rotos
-    //differentiate between alloc types, probably can get it from select_mapping.
-    //call free and shit
-    //look into __attribute__(destructor) for munmap
-    //idk man
+    copy_mem(alloc.head, new_alloc, size);
+    ft_free(alloc.head);
 }
 
 t_chunk *select_mapping(t_chunk *alloc, size_t size)
@@ -91,4 +86,6 @@ void *realloc(void *ptr, size_t size)
         return(sort_allocations(size));
 
     alloc = check_available_alloc(ptr, size);
+    if (alloc != NULL)
+        return (select_mapping(alloc, size));
 }
