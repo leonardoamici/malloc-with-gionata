@@ -48,16 +48,18 @@ int sort_type(int size)
     return (TINY);
 }
 
-t_chunk *switch_allocation_type(t_chunk *alloc, size_t size)
+void *switch_allocation_type(t_chunk *alloc, size_t size)
 {
     t_chunk *new_alloc = sort_allocations(&g_heap, size);
 
+    printf("ciao mondo \n");
+
     copy_mem(alloc->head, new_alloc, size);
     ft_free(alloc->head);
-    return (new_alloc);
+    return (new_alloc->head);
 }
 
-t_chunk *resize_allocation(t_chunk *alloc, size_t size)
+void *resize_allocation(t_chunk *alloc, size_t size)
 {
     if (alloc->next->available && (alloc->size + alloc->next->size > size))
     {
@@ -65,13 +67,13 @@ t_chunk *resize_allocation(t_chunk *alloc, size_t size)
         alloc->next += size;
         alloc->next->size -= size - alloc->size;
         alloc->size = size;
-        return (alloc);
+        return (alloc->head);
     }
     else
         return (switch_allocation_type(alloc, size));
 }
 
-t_chunk *select_mapping(t_chunk *alloc, size_t size)
+void *select_mapping(t_chunk *alloc, size_t size)
 {
     if (alloc->type == sort_type(size))
         return(resize_allocation(alloc, size));

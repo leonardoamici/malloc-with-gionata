@@ -91,7 +91,7 @@ unsigned int print_memories(t_chunk *page, char *str)
 
     while (temp)
     {
-        if (!temp->available)
+        if (1)
         {
             printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
             allocation_size += temp->size;
@@ -141,7 +141,7 @@ int calculate_impaginations(int alloc_size)
 
     return (impaginations);
 }
-
+ 
 void show_alloc_mem(t_heap *heap)
 {
     unsigned int total_size = 0;
@@ -178,13 +178,7 @@ int main()
     show_alloc_mem(&g_heap);
 
     printf("\nAfter realloc 1:\n\n");
-    ft_free(c);
-    a = ft_realloc(a, 5000);
-    show_alloc_mem(&g_heap);
-    
-    
-    printf("\nAfter realloc 2:\n\n");
-    e = ft_realloc(e, 10);
+    a = ft_realloc(a, 100);
     show_alloc_mem(&g_heap);
     
 
