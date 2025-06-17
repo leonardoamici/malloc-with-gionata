@@ -177,31 +177,16 @@ int main()
 
     show_alloc_mem(&g_heap);
 
-    ft_free(a);
-    ft_free(b);
+    printf("\nAfter realloc 1:\n\n");
     ft_free(c);
-    ft_free(d);
-    ft_free(e);
-
-    printf ("\nAfter free:\n\n");
+    a = ft_realloc(a, 5000);
     show_alloc_mem(&g_heap);
-
-    // ft_free(b);
-    // a = ft_malloc(1);
-    e = ft_malloc(100);
-    e = ft_malloc(10000);
-    e = ft_malloc(12);
-    e = ft_malloc(1111);
-
-
-    printf("\nAfter malloc:\n\n");
+    
+    
+    printf("\nAfter realloc 2:\n\n");
+    e = ft_realloc(e, 10);
     show_alloc_mem(&g_heap);
-
-    ft_free(e);
-
-    printf("\nAfter free:\n\n");
-    show_alloc_mem(&g_heap);
-
+    
 
 }
 
