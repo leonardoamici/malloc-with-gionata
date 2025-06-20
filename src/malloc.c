@@ -178,7 +178,7 @@ int main()
     show_alloc_mem(&g_heap);
 
     printf("\nAfter realloc 1:\n\n");
-    a = ft_realloc(a, 100);
+    a = ft_realloc(a, 5000);
     show_alloc_mem(&g_heap);
     
 

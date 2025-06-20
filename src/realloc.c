@@ -2,14 +2,14 @@
 
 extern t_heap g_heap;
 
-void    copy_mem(t_chunk *source, t_chunk *dest, size_t amount)
+void    copy_mem(void *source, void *dest, size_t amount)
 {
     int i;
 
     i = 0;
     while (i < amount)
     {
-        dest[i] = source[i];
+        ((char *)dest)[i] = ((char *)source)[i];
         i++;
     }
 }
@@ -50,13 +50,13 @@ int sort_type(int size)
 
 void *switch_allocation_type(t_chunk *alloc, size_t size)
 {
-    t_chunk *new_alloc = sort_allocations(&g_heap, size);
+    void *new_alloc = sort_allocations(&g_heap, size);
 
     printf("ciao mondo \n");
 
     copy_mem(alloc->head, new_alloc, size);
     ft_free(alloc->head);
-    return (new_alloc->head);
+    return (new_alloc);
 }
 
 void *resize_allocation(t_chunk *alloc, size_t size)

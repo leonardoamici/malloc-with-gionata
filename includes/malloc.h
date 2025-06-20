@@ -48,6 +48,7 @@ void *split_chunks(t_page *page, __uint32_t allocation);
 void *big_allocation(size_t allocation_size, t_chunk **large);
 void *sort_allocations(t_heap *heap, size_t size);
 void ft_free(void *ptr);
+void *ft_realloc(void *ptr, size_t size);
 
 extern t_heap g_heap;
 
