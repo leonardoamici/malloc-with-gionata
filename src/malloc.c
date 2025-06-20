@@ -1,27 +1,6 @@
-#include "../includes/malloc.h"
+#include "../includes/libft_malloc_ubuntu.h"
 
 t_heap g_heap;
-
-
-void init_allocation(t_page *pages, int size, int type)
-{
-    void *mem = NULL;
-
-    mem = mmap(NULL, sysconf(_SC_PAGESIZE) * size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    //printf("%p pages inner hellos 1 \n", pages);
-    pages->heap = (t_page*)mem;
-    //printf("inner hellos 2 \n");
-    //pages->small = mmap(NULL, sysconf(_SC_PAGESIZE) * 101, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    pages->head = (t_chunk *)(pages)->heap;  // First chunk starts at the beginning of the mmap'd memory
-    pages->head->head = (void *)((char *)(pages)->heap + sizeof(t_chunk));  // Start after the chunk metadata
-    pages->head->size = sysconf(_SC_PAGESIZE) * size - sizeof(t_chunk);  // Remaining size after chunk metadata
-    //printf("size is %d\npagesize is %d \nnbr of pages is %d\n", pages->head->size, sysconf(_SC_PAGESIZE), size);
-    //printf("inner hellos 3 \n");
-    pages->head->next = NULL;
-    pages->head->freed = 0;
-    pages->head->available = 1;
-    pages->head->type = type;
-}
 
 t_chunk *last_chunk(t_page *page)
 {
@@ -124,9 +103,9 @@ void *big_allocation(size_t allocation_size, t_chunk **large)
 
 void *sort_allocations(t_heap *heap, size_t size)
 {
-    if (size > SMALL_ALLOC)
+    if (size > (size_t)SMALL_ALLOC)
         return (big_allocation(size, &heap->large));
-    else if (size > TINY_ALLOC)
+    else if (size > (size_t)TINY_ALLOC)
         return (split_chunks(&heap->small, size));
     return (split_chunks(&heap->tiny, size));
 }
@@ -142,31 +121,33 @@ int calculate_impaginations(int alloc_size)
     return (impaginations);
 }
  
-void show_alloc_mem(t_heap *heap)
+void show_alloc_mem(void)
 {
     unsigned int total_size = 0;
 
-    total_size += print_memories(heap->tiny.head, "TINY");
-    total_size += print_memories(heap->small.head, "SMALL");
-    total_size += print_memories(heap->large, "LARGE");
+    total_size += print_memories(g_heap.tiny.head, "TINY");
+    total_size += print_memories(g_heap.small.head, "SMALL");
+    total_size += print_memories(g_heap.large, "LARGE");
 
     // Per Leo, il totale funziona, da rivedere questa soluzione però, al momemnto è una soluzione rapida e non mi convince molto, esiste sicuramente un modo migliore
     printf("Total : %d bytes\n", total_size);
 }
 
-void *ft_malloc(size_t size)
+void *malloc(size_t size)
 {
-    if (g_heap.initialized == false)
-    {
-        init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC), TINY);
-        init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC), SMALL);
-        g_heap.initialized = true;
-    }
-    return sort_allocations(&g_heap, size);
+    void *new_alloc;
+
+    pthread_mutex_lock(&g_heap.mutex);
+
+    new_alloc = sort_allocations(&g_heap, size);
+
+    pthread_mutex_unlock(&g_heap.mutex);
+
+    return (new_alloc);
 }
 
 
-int main()
+/*int main()
 {
     void *a = ft_malloc(1);
     void *b = ft_malloc(120);
@@ -182,7 +163,7 @@ int main()
     show_alloc_mem(&g_heap);
     
 
-}
+}*/
 
 //for large, anything bigger than medium. this isn't preallocated
 

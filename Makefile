@@ -18,8 +18,6 @@ FLAGS = -Wall -Werror -Wextra
 TYPE := $(shell uname -m)
 SYS := $(shell uname -s)
 
-LIBFT = Libft/libft.a
-
 ifeq ($(HOSTTYPE),)
     export HOSTTYPE := $(SYS)_$(TYPE)
 endif
@@ -30,41 +28,34 @@ LNAME = libft_malloc.so
 EXECUTABLE = main
 
 # Source and object files
-SRCS = malloc.c realloc.c free.c
+SRCS = src/malloc.c src/realloc.c src/free.c src/attributes.c
 OBJS = $(SRCS:.c=.o)
 
 SRCSM = main.c
 OBJSM = $(SRCSM:.c=.o)
 
 # Default rule (all targets)
-all: libcomp $(NAME) $(EXECUTABLE)
-
-libcomp:
-		@make -C Libft
+all: $(NAME) $(EXECUTABLE)
 
 # Compile object files and create shared library
 $(NAME): $(OBJS) $(OBJSM)
 	ln -sf $(LNAME) $(NAME)
 	$(CC) -c -fPIC $(FLAGS) $(SRCS)
-	$(CC) -shared -o $(LNAME) $(OBJS) $(LIBFT)
+	$(CC) -shared -o $(LNAME) $(OBJS)
 
 # Create executable linking against libft_malloc.so
 $(EXECUTABLE):
-	$(CC) $(FLAGS) -o $(EXECUTABLE) $(OBJSM) $(LIBFT) -L/. $(LNAME) -Wl,-rpath=.
+	$(CC) $(FLAGS) -o $(EXECUTABLE) $(OBJSM) -L/. $(LNAME) -Wl,
 	chmod +x $(EXECUTABLE)
 
-libclean:
-	@make clean -C Libft
 
 # Clean up object files
-clean: libclean
+clean:
 	rm -rf *.o
 
-libfclean:
-		@make fclean -C Libft
 
 # Full cleanup, including libraries and executables
-fclean: libfclean clean
+fclean: clean
 	rm -rf $(NAME) $(LNAME) $(EXECUTABLE)
 
 # Rebuild the project

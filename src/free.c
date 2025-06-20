@@ -1,4 +1,4 @@
-#include "../includes/malloc.h"
+#include "../includes/libft_malloc_ubuntu.h"
 
 extern t_heap g_heap;
 
@@ -68,12 +68,11 @@ void sort_free(void *ptr)
     }
 }
 
-void ft_free(void *ptr)
+void free(void *ptr)
 {
     if (!ptr)
         return;
-
-    // pthread_mutex_lock(&g_heap.mutex);
+    pthread_mutex_lock(&g_heap.mutex);
     sort_free(ptr);
-    // pthread_mutex_unlock(&g_heap.mutex);
+    pthread_mutex_unlock(&g_heap.mutex);
 }

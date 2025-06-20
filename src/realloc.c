@@ -1,10 +1,10 @@
-#include "../includes/malloc.h"
+#include "../includes/libft_malloc_ubuntu.h"
 
 extern t_heap g_heap;
 
 void    copy_mem(void *source, void *dest, size_t amount)
 {
-    int i;
+    size_t i;
 
     i = 0;
     while (i < amount)
@@ -28,7 +28,7 @@ t_chunk *find_ptr(void *ptr, t_chunk *map)
     return (NULL);
 }
 
-t_chunk *check_available_alloc(void *ptr, size_t size)
+t_chunk *check_available_alloc(void *ptr)
 {
 
     if (find_ptr(ptr, g_heap.tiny.head))
@@ -55,7 +55,7 @@ void *switch_allocation_type(t_chunk *alloc, size_t size)
     printf("ciao mondo \n");
 
     copy_mem(alloc->head, new_alloc, size);
-    ft_free(alloc->head);
+    free(alloc->head);
     return (new_alloc);
 }
 
@@ -81,15 +81,19 @@ void *select_mapping(t_chunk *alloc, size_t size)
         return (switch_allocation_type(alloc, size));
 }
 
-void *ft_realloc(void *ptr, size_t size)
+void *realloc(void *ptr, size_t size)
 {
     t_chunk *alloc;
 
+
+    pthread_mutex_lock(&g_heap.mutex);
     if (ptr == NULL)
         return(sort_allocations(&g_heap, size));
 
-    alloc = check_available_alloc(ptr, size);
+    alloc = check_available_alloc(ptr);
     if (alloc != NULL)
         return (select_mapping(alloc, size));
+    pthread_mutex_unlock(&g_heap.mutex);
     return (alloc);
+
 }

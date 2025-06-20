@@ -39,7 +39,7 @@ typedef struct s_heap
     t_page small;
     t_chunk *large;
     bool initialized;
-    // pthread_mutex_t mutex;
+    pthread_mutex_t mutex;
 }               t_heap;
 
 
@@ -47,8 +47,11 @@ typedef struct s_heap
 void *split_chunks(t_page *page, __uint32_t allocation);
 void *big_allocation(size_t allocation_size, t_chunk **large);
 void *sort_allocations(t_heap *heap, size_t size);
-void ft_free(void *ptr);
-void *ft_realloc(void *ptr, size_t size);
+int calculate_impaginations(int alloc_size);
+void free(void *ptr);
+void *realloc(void *ptr, size_t size);
+void show_alloc_mem(void);
+void init_heap(void);
 
 extern t_heap g_heap;
 
