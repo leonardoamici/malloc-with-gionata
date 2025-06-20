@@ -1,8 +1,8 @@
 #ifndef MALLOC_H
 # define MALLOC_H
 
-# define TINY_ALLOC getpagesize() / 8
-# define SMALL_ALLOC getpagesize()
+# define TINY_ALLOC sysconf(_SC_PAGESIZE) / 8
+# define SMALL_ALLOC sysconf(_SC_PAGESIZE)
 
 # define TINY 0
 # define SMALL 1
