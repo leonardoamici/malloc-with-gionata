@@ -85,6 +85,9 @@ void *realloc(void *ptr, size_t size)
 
 
     pthread_mutex_lock(&g_heap.mutex);
+
+    ft_printf("realloc called on ptr %p with size %lu\n", ptr, size);
+
     if (ptr == NULL)
         return(sort_allocations(&g_heap, size));
 

@@ -73,6 +73,9 @@ void free(void *ptr)
     if (!ptr)
         return;
     pthread_mutex_lock(&g_heap.mutex);
+
+    ft_printf("free called on ptr %p\n", ptr);
     sort_free(ptr);
+    
     pthread_mutex_unlock(&g_heap.mutex);
 }

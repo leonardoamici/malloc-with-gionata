@@ -15,6 +15,7 @@
 # include <unistd.h>
 # include <string.h>
 # include <pthread.h>
+# include "../Libft/libft.h"
 
 typedef struct s_chunk
 {

@@ -133,20 +133,22 @@ void show_alloc_mem(void)
     total_size += print_memories(g_heap.large, "LARGE");
 
     // Per Leo, il totale funziona, da rivedere questa soluzione però, al momemnto è una soluzione rapida e non mi convince molto, esiste sicuramente un modo migliore
-    printf("Total : %d bytes\n", total_size);
+    ft_printf("Total : %d bytes\n", total_size);
 }
 
 void *malloc(size_t size)
 {
     void *new_alloc;
 
-    write(1, "here4\n", 6);
-
     pthread_mutex_lock(&g_heap.mutex);
+
+    ft_printf("malloc called with size %lu\n", size);
 
     new_alloc = sort_allocations(&g_heap, size);
 
     pthread_mutex_unlock(&g_heap.mutex);
+
+    ft_printf("returned ptr %p\n", new_alloc);
 
     return (new_alloc);
 }
