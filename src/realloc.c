@@ -52,8 +52,6 @@ void *switch_allocation_type(t_chunk *alloc, size_t size)
 {
     void *new_alloc = sort_allocations(&g_heap, size);
 
-    printf("ciao mondo \n");
-
     copy_mem(alloc->head, new_alloc, size);
     free(alloc->head);
     return (new_alloc);

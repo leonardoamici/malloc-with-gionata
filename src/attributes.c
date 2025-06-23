@@ -22,7 +22,7 @@ void init_allocation(t_page *pages, int size, int type)
     pages->head->type = type;
 }
 
-void __attribute__((constructor)) initialize_heap() {
+void __attribute__((constructor, used)) initialize_heap() {
     init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC), TINY);
     init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC), SMALL);
     pthread_mutex_init(&g_heap.mutex, NULL);

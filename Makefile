@@ -1,18 +1,6 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: leonardo <leonardo@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/09/04 16:45:52 by leonardo          #+#    #+#              #
-#    Updated: 2024/09/11 14:52:57 by leonardo         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 # Compiler and flags
 CC = gcc
-FLAGS = -Wall -Werror -Wextra
+FLAGS = -Wall -Werror -Wextra -fPIC
 
 # System-specific variables
 TYPE := $(shell uname -m)
@@ -22,44 +10,41 @@ ifeq ($(HOSTTYPE),)
     export HOSTTYPE := $(SYS)_$(TYPE)
 endif
 
+# Source and object files
+SRCS = src/malloc.c src/realloc.c src/free.c src/attributes.c
+OBJS = $(notdir $(SRCS:.c=.o))
+
 # Output names
 NAME = libft_malloc_$(HOSTTYPE).so
 LNAME = libft_malloc.so
 EXECUTABLE = main
 
-# Source and object files
-SRCS = src/malloc.c src/realloc.c src/free.c src/attributes.c
-OBJS = $(SRCS:.c=.o)
+# Default target: build shared lib + symlink
+all: $(NAME)
+	ln -sf $(NAME) $(LNAME)
 
-SRCSM = main.c
-OBJSM = $(SRCSM:.c=.o)
+# Build shared library
+$(NAME): $(OBJS)
+	$(CC) -shared -o $@ $^
 
-# Default rule (all targets)
-all: $(NAME) $(EXECUTABLE)
+# Compile .c files to .o in current dir
+%.o: src/%.c
+	$(CC) $(FLAGS) -c $< -o $@
 
-# Compile object files and create shared library
-$(NAME): $(OBJS) $(OBJSM)
-	ln -sf $(LNAME) $(NAME)
-	$(CC) -c -fPIC $(FLAGS) $(SRCS)
-	$(CC) -shared -o $(LNAME) $(OBJS)
+# Optional: build test executable
+$(EXECUTABLE): $(OBJS) main.c
+	$(CC) $(FLAGS) -o $@ $^ -L. -l:$(NAME)
+	chmod +x $@
 
-# Create executable linking against libft_malloc.so
-$(EXECUTABLE):
-	$(CC) $(FLAGS) -o $(EXECUTABLE) $(OBJSM) -L/. $(LNAME) -Wl,
-	chmod +x $(EXECUTABLE)
-
-
-# Clean up object files
+# Clean object files
 clean:
-	rm -rf *.o
+	rm -f *.o
 
-
-# Full cleanup, including libraries and executables
+# Full clean: includes library and executable
 fclean: clean
-	rm -rf $(NAME) $(LNAME) $(EXECUTABLE)
+	rm -f $(NAME) $(LNAME) $(EXECUTABLE)
 
-# Rebuild the project
+# Rebuild everything
 re: fclean all
 
-# Phony targets
-.PHONY: all re clean fclean
+.PHONY: all clean fclean re

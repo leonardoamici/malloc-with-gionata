@@ -31,6 +31,9 @@ void *split_chunks(t_page *page, __uint32_t allocation)
         temp = temp->next;
     }
 
+    if (best->size < allocation)
+        return (NULL);
+
     while (((long long int)best->head + allocation) % 16)
         allocation++;
 
@@ -137,6 +140,8 @@ void *malloc(size_t size)
 {
     void *new_alloc;
 
+    write(1, "here4\n", 6);
+
     pthread_mutex_lock(&g_heap.mutex);
 
     new_alloc = sort_allocations(&g_heap, size);
@@ -149,20 +154,26 @@ void *malloc(size_t size)
 
 /*int main()
 {
-    void *a = ft_malloc(1);
-    void *b = ft_malloc(120);
-    void *c = ft_malloc(100);
-    void *d = ft_malloc(1000);
-    void *e = ft_malloc(5000);
-    // void *c = ft_malloc(130);
+    char *str = "string\n";
 
-    show_alloc_mem(&g_heap);
+    char *str2 = malloc(10);
 
-    printf("\nAfter realloc 1:\n\n");
-    a = ft_realloc(a, 5000);
-    show_alloc_mem(&g_heap);
-    
+    int i = 0;
 
+    for (int j = 0; j < 500; j++)
+    {
+        str2 = malloc(450);
+    }
+    if (str2 == NULL)
+        return (0);
+    write(1, "here\n", 5);
+    while(str[i])
+    {
+        str2[i] = str[i];
+        i++;
+    }
+    str2[i] = '\0';
+    write(1, str2, 7);
 }*/
 
 //for large, anything bigger than medium. this isn't preallocated
