@@ -47,7 +47,7 @@ libcomp:
 
 # Optional: build test executable
 $(EXECUTABLE): $(OBJS) main.c
-	$(CC) $(FLAGS) -o $@ $^ -L. -l:$(NAME)
+	$(CC) $(FLAGS) -o $@ $^ ./$(LNAME)
 	chmod +x $@
 
 libclean:

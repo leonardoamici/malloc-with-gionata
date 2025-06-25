@@ -26,7 +26,7 @@ static int	ft_conv(va_list ap, char format)
 	if (format == 'd' || format == 'i')
 		print_len = ft_digit(va_arg(ap, int));
 	if (format == 'u')
-		print_len = ft_unsigned(va_arg(ap, unsigned int));
+		print_len = ft_unsigned(va_arg(ap, size_t));
 	if (format == 'x' || format == 'X')
 		print_len = ft_hexd(va_arg(ap, unsigned int), format);
 	if (format == 'M')

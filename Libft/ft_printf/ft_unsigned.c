@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-static void	prova(unsigned int n)
+static void	prova(size_t n)
 {
 	if (n >= 10)
 	{
@@ -26,7 +26,7 @@ static void	prova(unsigned int n)
 	}
 }
 
-int	ft_unsigned(unsigned int n)
+int	ft_unsigned(size_t n)
 {
 	long	x;
 	int		y;

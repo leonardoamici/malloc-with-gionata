@@ -142,13 +142,13 @@ void *malloc(size_t size)
 
     pthread_mutex_lock(&g_heap.mutex);
 
-    ft_printf("malloc called with size %lu\n", size);
+    ft_printf("malloc called with size %d \n", size);
 
     new_alloc = sort_allocations(&g_heap, size);
 
     pthread_mutex_unlock(&g_heap.mutex);
 
-    ft_printf("returned ptr %p\n", new_alloc);
+    ft_printf("returned ptr %p \n", new_alloc);
 
     return (new_alloc);
 }

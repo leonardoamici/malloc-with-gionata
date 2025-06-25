@@ -62,7 +62,7 @@ void *resize_allocation(t_chunk *alloc, size_t size)
     if (alloc->next->available && (alloc->size + alloc->next->size > size))
     {
         alloc->next->head += size;
-        alloc->next += size;
+        alloc->next +=  (t_chunk *)((char *)alloc + sizeof(t_chunk) + size);
         alloc->next->size -= size - alloc->size;
         alloc->size = size;
         return (alloc->head);
@@ -86,14 +86,20 @@ void *realloc(void *ptr, size_t size)
 
     pthread_mutex_lock(&g_heap.mutex);
 
-    ft_printf("realloc called on ptr %p with size %lu\n", ptr, size);
+    printf("realloc called on ptr %p with size %zu\n", ptr, size);
 
     if (ptr == NULL)
+    {
+        pthread_mutex_unlock(&g_heap.mutex);
         return(sort_allocations(&g_heap, size));
+    }
 
     alloc = check_available_alloc(ptr);
     if (alloc != NULL)
+    {
+        pthread_mutex_unlock(&g_heap.mutex);
         return (select_mapping(alloc, size));
+    }
     pthread_mutex_unlock(&g_heap.mutex);
     return (alloc);
 
