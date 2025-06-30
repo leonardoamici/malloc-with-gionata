@@ -7,7 +7,10 @@ t_chunk *last_chunk(t_page *page)
     t_chunk *temp = page->head;
 
     while (temp->next)
+    {
+        ft_printf("loop 1\n");
         temp = temp->next;
+    }
 
     return temp;
 }
@@ -23,6 +26,7 @@ void *split_chunks(t_page *page, __uint32_t allocation)
 
     while (temp)
     {
+        ft_printf("loop 1\n");
         if (temp->size > allocation && temp->available)
         {
             best = temp;
@@ -35,7 +39,10 @@ void *split_chunks(t_page *page, __uint32_t allocation)
         return (NULL);
 
     while (((long long int)best->head + allocation) % 16)
+    {
+        ft_printf("loop 3\n");
         allocation++;
+    }
 
     t_chunk *new;
     new = (void *)((char *)best->head + allocation);
@@ -73,6 +80,7 @@ unsigned int print_memories(t_chunk *page, char *str)
 
     while (temp)
     {
+        //claudio ha il pene piccolo
         if (1)
         {
             printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
@@ -136,14 +144,30 @@ void show_alloc_mem(void)
     ft_printf("Total : %d bytes\n", total_size);
 }
 
+void *calloc(size_t nmemb, size_t size)
+{
+    void *ptr;
+    ft_printf("loop 6\n");
+
+    ptr = malloc(nmemb * size);
+    if (ptr == NULL)
+        return (NULL);
+    for (size_t i = 0; i < nmemb * size; i++)
+    {
+        ((char *)ptr)[i] = 0;
+       // ft_printf(" 7\n");
+    }
+    return (ptr);
+}
+
 void *malloc(size_t size)
 {
     void *new_alloc;
-
+    
     pthread_mutex_lock(&g_heap.mutex);
-
-    ft_printf("malloc called with size %d \n", size);
-
+    
+    printf("malloc called with size %zu \n", size);
+    
     new_alloc = sort_allocations(&g_heap, size);
 
     pthread_mutex_unlock(&g_heap.mutex);

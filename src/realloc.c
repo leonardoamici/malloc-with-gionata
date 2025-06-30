@@ -59,10 +59,11 @@ void *switch_allocation_type(t_chunk *alloc, size_t size)
 
 void *resize_allocation(t_chunk *alloc, size_t size)
 {
+    //qui sta tutto cacato porco dio
     if (alloc->next->available && (alloc->size + alloc->next->size > size))
     {
         alloc->next->head += size;
-        alloc->next +=  (t_chunk *)((char *)alloc + sizeof(t_chunk) + size);
+        alloc->next =  (t_chunk *)((char *)alloc + sizeof(t_chunk) + size);
         alloc->next->size -= size - alloc->size;
         alloc->size = size;
         return (alloc->head);
