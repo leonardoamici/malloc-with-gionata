@@ -31,6 +31,8 @@ static int	ft_conv(va_list ap, char format)
 		print_len = ft_hexd(va_arg(ap, unsigned int), format);
 	if (format == 'M')
 		print_len = ft_matrix(va_arg(ap, char **));
+	if (format == 'z')
+		print_len == size_t_to_str(va_arg(ap, size_t));
 	if (format == '%')
 	{
 		write(1, "%", 1);

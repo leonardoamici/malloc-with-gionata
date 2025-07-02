@@ -65,6 +65,7 @@ void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
+
 //printf
 int		ft_char(int c);
 int		ft_digit(int n);
@@ -72,8 +73,10 @@ int		ft_hexd(unsigned int n, char format);
 int		ft_path(unsigned long int n);
 int		ft_printf(const char *str, ...);
 int		ft_string(char *str);
-int		ft_unsigned(size_t n);
+int		ft_unsigned(long long unsigned n);
 int		ft_matrix(char **mat);
+int		size_t_to_str(size_t value, char *buf);
+
 //printf_fd
 int		ft_char_fd(int fd, int c);
 int		ft_digit_fd(int fd, int n);
@@ -83,6 +86,7 @@ int		ft_printf_fd(int fd, const char *str, ...);
 int		ft_string_fd(int fd, char *str);
 int		ft_unsigned_fd(int fd, unsigned int n);
 int		ft_matrix_fd(int fd, char **mat);
+
 //other
 char	*get_next_line(int fd);
 int		ft_matlen(char **mat);

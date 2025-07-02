@@ -21,7 +21,8 @@ int		ft_hexd(unsigned int n, char format);
 int		ft_path(unsigned long int n);
 int		ft_printf(const char *str, ...);
 int		ft_string(char *str);
-int		ft_unsigned(size_t n);
+int		ft_unsigned(long long unsigned n);
 int		ft_matrix(char **mat);
+int     size_t_to_str(size_t value, char *buf);
 
 #endif
