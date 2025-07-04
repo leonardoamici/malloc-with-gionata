@@ -21,7 +21,7 @@ int size_t_to_str(size_t value, char *buf)
     if (value == 0) {
         buf[0] = '0';
         buf[1] = '\0';
-        return;
+        return (1);
     }
 
     while (value > 0) {

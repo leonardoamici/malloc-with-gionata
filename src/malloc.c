@@ -15,10 +15,9 @@ t_chunk *last_chunk(t_page *page)
     return temp;
 }
 
-void *split_chunks(t_page *page, __uint32_t allocation)
+void *split_chunks(t_page *page, size_t allocation)
 {
     t_chunk *temp = page->head;
-    // set the best chunk to the last one : TODO
     t_chunk *best = last_chunk(page);
 
     if (allocation == 0)
@@ -27,10 +26,9 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     while (temp)
     {
         ft_printf("loop 1\n");
-        if (temp->size > allocation && temp->available)
+        if ((temp->size > allocation && temp->size < best->size) && temp->available)
         {
             best = temp;
-            // printf("best set as %p", best);
         }
         temp = temp->next;
     }
@@ -38,14 +36,14 @@ void *split_chunks(t_page *page, __uint32_t allocation)
     if (best->size < allocation)
         return (NULL);
 
-    while (((long long int)best->head + allocation) % 16)
+    while (((size_t)best->head + allocation) % 16)
     {
         ft_printf("loop 3\n");
         allocation++;
     }
 
     t_chunk *new;
-    new = (void *)((char *)best->head + allocation);
+    new = (void *)((char *)best->head + allocation + sizeof(t_chunk));
     new->head = (void *)((char *)new + sizeof(t_chunk));
     new->size = best->size - (allocation + sizeof(t_chunk));
     new->next =  best->next;
@@ -80,7 +78,6 @@ unsigned int print_memories(t_chunk *page, char *str)
 
     while (temp)
     {
-        //claudio ha il pene piccolo
         if (1)
         {
             printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
@@ -97,8 +94,6 @@ void *big_allocation(size_t allocation_size, t_chunk **large)
     void *mem = NULL;
     
     nbr_pages = allocation_size / sysconf(_SC_PAGESIZE) + 1;
-    //if (allocation_size % getpagesize);
-    //    nbr_pages++;
     
     mem = mmap(NULL, sysconf(_SC_PAGESIZE) * nbr_pages, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     *large = (t_chunk *)mem;  // First chunk starts at the beginning of the mmap'd memory
@@ -121,7 +116,7 @@ void *sort_allocations(t_heap *heap, size_t size)
     return (split_chunks(&heap->tiny, size));
 }
 
-int calculate_impaginations(int alloc_size)
+int calculate_impaginations(size_t alloc_size)
 {
     int needed;
     int impaginations;

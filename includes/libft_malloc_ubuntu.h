@@ -45,10 +45,10 @@ typedef struct s_heap
 
 
 
-void *split_chunks(t_page *page, __uint32_t allocation);
+void *split_chunks(t_page *page, size_t allocation);
 void *big_allocation(size_t allocation_size, t_chunk **large);
 void *sort_allocations(t_heap *heap, size_t size);
-int calculate_impaginations(int alloc_size);
+int calculate_impaginations(size_t alloc_size);
 void free(void *ptr);
 void *realloc(void *ptr, size_t size);
 void show_alloc_mem(void);

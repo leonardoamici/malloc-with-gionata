@@ -32,7 +32,10 @@ static int	ft_conv(va_list ap, char format)
 	if (format == 'M')
 		print_len = ft_matrix(va_arg(ap, char **));
 	if (format == 'z')
-		print_len == size_t_to_str(va_arg(ap, size_t));
+	{
+		char buf[32];
+		print_len = size_t_to_str(va_arg(ap, size_t), buf);
+	}
 	if (format == '%')
 	{
 		write(1, "%", 1);

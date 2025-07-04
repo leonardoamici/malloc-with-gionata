@@ -26,7 +26,7 @@ void __attribute__((constructor, used)) initialize_heap() {
     init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC), TINY);
     init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC), SMALL);
     pthread_mutex_init(&g_heap.mutex, NULL);
-    g.heap->large = NULL;
+    g_heap.large = NULL;
     g_heap.initialized = true;
 }
 
@@ -37,10 +37,10 @@ void __attribute__((destructor, used)) destroy_heap() {
 
     void *temp;
 
-    while (g_heap->large)
+    while (g_heap.large)
     {
-        temp = (void *)g_heap->large->next;
-        munmap(g_heap->large->head, size);
-        g_heap->large = (t_chunk *)temp;
+        temp = (void *)g_heap.large->next;
+        munmap(g_heap.large->head, g_heap.large->size);
+        g_heap.large = (t_chunk *)temp;
     }
 }

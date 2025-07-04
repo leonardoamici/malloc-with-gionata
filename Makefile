@@ -31,12 +31,13 @@ LNAME = libft_malloc.$(SHARED_EXT)
 EXECUTABLE = main
 
 # Default target: build shared lib + symlink
-all: libcomp $(NAME)
-	ln -sf $(NAME) $(LNAME)
+all: libcomp $(NAME) $(EXECUTABLE)
+	
 
 # Build shared library
 $(NAME): $(OBJS)
 	$(CC) $(SHARED_FLAG) -o $@ $^ $(LIBFT)
+	ln -sf $(NAME) $(LNAME)
 
 libcomp:
 	@make -C Libft

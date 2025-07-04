@@ -59,14 +59,29 @@ void *switch_allocation_type(t_chunk *alloc, size_t size)
 
 void *resize_allocation(t_chunk *alloc, size_t size)
 {
-    //qui sta tutto cacato porco dio
-    if (alloc->next->available && (alloc->size + alloc->next->size > size))
+    if (alloc->next && alloc->next->available && (alloc->size + sizeof(t_chunk) + alloc->next->size >= size))
     {
-        alloc->next->head += size;
-        alloc->next =  (t_chunk *)((char *)alloc + sizeof(t_chunk) + size);
-        alloc->next->size -= size - alloc->size;
-        alloc->size = size;
-        return (alloc->head);
+        // How much we can take from next chunk
+        size_t total_size = alloc->size + sizeof(t_chunk) + alloc->next->size;
+        size_t remaining = total_size - size;
+
+        if (remaining > sizeof(t_chunk) + 1) {
+            // Shrink next chunk and shift its pointer
+            t_chunk *new_next = (t_chunk *)((char *)alloc->head + size);
+            new_next->head = (void *)((char *)new_next + sizeof(t_chunk));
+            new_next->size = remaining - sizeof(t_chunk);
+            new_next->available = 1;
+            new_next->next = alloc->next->next;
+
+            alloc->size = size;
+            alloc->next = new_next;
+        } 
+        /*else {
+            // Not enough space for new chunk, consume all
+            alloc->size = total_size;
+            alloc->next = alloc->next->next;
+        }*/
+        return alloc->head;
     }
     else
         return (switch_allocation_type(alloc, size));
