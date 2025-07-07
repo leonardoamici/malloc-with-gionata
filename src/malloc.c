@@ -78,7 +78,7 @@ unsigned int print_memories(t_chunk *page, char *str)
 
     while (temp)
     {
-        if (1)
+        gif (1)
         {
             printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
             allocation_size += temp->size;
