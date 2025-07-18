@@ -23,6 +23,6 @@ int		ft_printf(const char *str, ...);
 int		ft_string(char *str);
 int		ft_unsigned(long long unsigned n);
 int		ft_matrix(char **mat);
-int     size_t_to_str(size_t value, char *buf);
+void    print_size_t(size_t n) 
 
 #endif

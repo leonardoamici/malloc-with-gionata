@@ -25,6 +25,7 @@ typedef struct s_chunk
     void *head;
     int freed;
     int type;
+    
 }               t_chunk;
 
 typedef struct  s_page
@@ -46,13 +47,16 @@ typedef struct s_heap
 
 
 void *split_chunks(t_page *page, size_t allocation);
-void *big_allocation(size_t allocation_size, t_chunk **large);
+void *big_allocation(size_t allocation_size);
 void *sort_allocations(t_heap *heap, size_t size);
-int calculate_impaginations(size_t alloc_size);
 void free(void *ptr);
 void *realloc(void *ptr, size_t size);
 void show_alloc_mem(void);
+void show_alloc_mem_ex(void);
 void init_heap(void);
+void *check_available_alloc(void *ptr);
+void print_hexa_dump(void *ptr);
+void print_size_t(size_t n);
 
 extern t_heap g_heap;
 

@@ -22,7 +22,7 @@ else
 endif
 
 # Source and object files
-SRCS = src/malloc.c src/realloc.c src/free.c src/attributes.c
+SRCS = src/malloc.c src/realloc.c src/free.c src/attributes.c src/show_alloc_mem.c src/utils.c
 OBJS = $(notdir $(SRCS:.c=.o))
 
 # Output names
@@ -47,9 +47,8 @@ libcomp:
 	$(CC) $(FLAGS) -c $< -o $@
 
 # Optional: build test executable
-$(EXECUTABLE): $(OBJS) main.c
-	$(CC) $(FLAGS) -o $@ $^ ./$(LNAME)
-	chmod +x $@
+$(EXECUTABLE): $(OBJS)
+	$(CC) -o main.test ./main.c ./$(LNAME)
 
 libclean:
 	@make clean -C Libft
@@ -64,6 +63,7 @@ libfclean:
 # Full clean: includes library and executable
 fclean: libfclean clean
 	rm -f $(NAME) $(LNAME) $(EXECUTABLE)
+	rm *.test
 
 # Rebuild everything
 re: fclean all

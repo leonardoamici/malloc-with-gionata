@@ -13,32 +13,6 @@
 #include "libft.h"
 
 
-int size_t_to_str(size_t value, char *buf) 
-{
-    char temp[32];
-    int i = 0;
-
-    if (value == 0) {
-        buf[0] = '0';
-        buf[1] = '\0';
-        return (1);
-    }
-
-    while (value > 0) {
-        temp[i++] = '0' + (value % 10);
-        value /= 10;
-    }
-
-    int j = 0;
-    while (i-- > 0) {
-        buf[j++] = temp[i];
-    }
-    buf[j] = '\0';
-
-	return (j);
-}
-
-
 static void	prova(long long unsigned n)
 {
 	if (n >= 10)

@@ -8,141 +8,108 @@ t_chunk *last_chunk(t_page *page)
 
     while (temp->next)
     {
-        ft_printf("loop 1\n");
         temp = temp->next;
     }
-
     return temp;
+}
+
+static inline size_t align16(size_t size) 
+{
+    return (size + 15) & ~((size_t)15);
 }
 
 void *split_chunks(t_page *page, size_t allocation)
 {
-    t_chunk *temp = page->head;
-    t_chunk *best = last_chunk(page);
-
     if (allocation == 0)
         allocation = 1;
 
+    allocation = align16(allocation);
+
+    t_chunk *temp = page->head;
+    t_chunk *best = NULL;
+
     while (temp)
     {
-        ft_printf("loop 1\n");
-        if ((temp->size > allocation && temp->size < best->size) && temp->available)
+        if (temp->available && temp->size >= allocation + sizeof(t_chunk))
         {
-            best = temp;
+            if (!best || temp->size < best->size) {
+                best = temp;
+            }
         }
         temp = temp->next;
     }
+    //ft_printf("effective allocation = %d\n", allocation);
+    if (!best)
+        return NULL;
 
-    if (best->size < allocation)
-        return (NULL);
-
-    while (((size_t)best->head + allocation) % 16)
+    size_t remaining = best->size - allocation;
+    if (remaining < sizeof(t_chunk) + 16)
     {
-        ft_printf("loop 3\n");
-        allocation++;
+        best->available = 0;
+        best->freed = 0;
+        page->available -= best->size;
+        return best->head;
     }
 
-    t_chunk *new;
-    new = (void *)((char *)best->head + allocation + sizeof(t_chunk));
-    new->head = (void *)((char *)new + sizeof(t_chunk));
-    new->size = best->size - (allocation + sizeof(t_chunk));
-    new->next =  best->next;
-    new->available = 1;
-    new->type = best->type;
+    t_chunk *new_chunk = (void *)((char *)best->head + allocation);
+    new_chunk->head = (char *)new_chunk + sizeof(t_chunk);
+    new_chunk->size = remaining - sizeof(t_chunk);
+    new_chunk->next = best->next;
+    new_chunk->available = 1;
+    new_chunk->type = best->type;
 
     best->available = 0;
     best->freed = 0;
-    best->next = new;
     best->size = allocation;
+    best->next = new_chunk;
 
-    page->available -= allocation;
-    return (best->head);
+    page->available -= allocation + sizeof(t_chunk);
+
+    return best->head;
 }
 
-unsigned int print_memories(t_chunk *page, char *str)
+void *big_allocation(size_t allocation_size)
 {
-    size_t allocation_size;
+    long page_size = sysconf(_SC_PAGESIZE);
+    int nbr_pages = (allocation_size + sizeof(t_chunk) + page_size - 1) / page_size;
 
-    allocation_size = 0;
-    if (!page)
-    {
-        printf("%s : No memory allocated\n", str);
-        return 0;
+    void *mem = mmap(NULL, page_size * nbr_pages, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (mem == MAP_FAILED)
+        return NULL;
+
+    t_chunk *new_chunk = (t_chunk *)mem;
+    new_chunk->head = (void *)((char *)mem + sizeof(t_chunk));
+    new_chunk->size = page_size * nbr_pages - sizeof(t_chunk);
+    new_chunk->next = NULL;
+    new_chunk->freed = 0;
+    new_chunk->available = 0;
+    new_chunk->type = LARGE;
+
+    // Insert into the global large list
+    if (!g_heap.large) {
+        g_heap.large = new_chunk;
+    } else {
+        t_chunk *current = g_heap.large;
+        while (current->next)
+            current = current->next;
+        current->next = new_chunk;
     }
-
-    t_chunk *temp;
-    temp = page;
-    // unsigned int total_size = 0;
-
-    printf("%s : %p\n", str, page);
-
-    while (temp)
-    {
-        gif (1)
-        {
-            printf("%p - %p : %d bytes%s\n", temp->head, temp->head + temp->size, temp->size, temp->freed ? " (free)" : "");
-            allocation_size += temp->size;
-        }
-        temp = temp->next;
-    }
-    return allocation_size;
-}
-
-void *big_allocation(size_t allocation_size, t_chunk **large)
-{
-    int nbr_pages;
-    void *mem = NULL;
-    
-    nbr_pages = allocation_size / sysconf(_SC_PAGESIZE) + 1;
-    
-    mem = mmap(NULL, sysconf(_SC_PAGESIZE) * nbr_pages, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    *large = (t_chunk *)mem;  // First chunk starts at the beginning of the mmap'd memory
-    (*large)->head = (void *)((char *)mem + sizeof(t_chunk));  // Start after the chunk metadata
-    (*large)->size = sysconf(_SC_PAGESIZE) * nbr_pages - sizeof(t_chunk);  // Remaining size after chunk metadata
-    (*large)->next = NULL;
-    (*large)->freed = 0;
-    (*large)->available = 0;
-    (*large)->type = LARGE;
-
-    return ((*large)->head);
+    return new_chunk->head;
 }
 
 void *sort_allocations(t_heap *heap, size_t size)
 {
     if (size > (size_t)SMALL_ALLOC)
-        return (big_allocation(size, &heap->large));
+        return (big_allocation(size));
     else if (size > (size_t)TINY_ALLOC)
         return (split_chunks(&heap->small, size));
     return (split_chunks(&heap->tiny, size));
 }
-
-int calculate_impaginations(size_t alloc_size)
-{
-    int needed;
-    int impaginations;
-
-    needed = (alloc_size + sizeof(t_chunk)) * 100;
-    impaginations = needed / sysconf(_SC_PAGESIZE) + 1;
-
-    return (impaginations);
-}
  
-void show_alloc_mem(void)
-{
-    unsigned int total_size = 0;
-
-    total_size += print_memories(g_heap.tiny.head, "TINY");
-    total_size += print_memories(g_heap.small.head, "SMALL");
-    total_size += print_memories(g_heap.large, "LARGE");
-
-    // Per Leo, il totale funziona, da rivedere questa soluzione però, al momemnto è una soluzione rapida e non mi convince molto, esiste sicuramente un modo migliore
-    ft_printf("Total : %d bytes\n", total_size);
-}
-
 void *calloc(size_t nmemb, size_t size)
 {
     void *ptr;
-    ft_printf("loop 6\n");
 
     ptr = malloc(nmemb * size);
     if (ptr == NULL)
@@ -150,7 +117,6 @@ void *calloc(size_t nmemb, size_t size)
     for (size_t i = 0; i < nmemb * size; i++)
     {
         ((char *)ptr)[i] = 0;
-       // ft_printf(" 7\n");
     }
     return (ptr);
 }
@@ -161,13 +127,13 @@ void *malloc(size_t size)
     
     pthread_mutex_lock(&g_heap.mutex);
     
-    printf("malloc called with size %zu \n", size);
+   // ft_printf("malloc called with size %z \n", size);
     
     new_alloc = sort_allocations(&g_heap, size);
 
     pthread_mutex_unlock(&g_heap.mutex);
 
-    ft_printf("returned ptr %p \n", new_alloc);
+    //ft_printf("returned ptr %p \n", new_alloc);
 
     return (new_alloc);
 }
