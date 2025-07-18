@@ -61,11 +61,16 @@ void sort_free(void *ptr)
 
     
     current = g_heap.large;
-    if (current->head == ptr)
+    prev = NULL
+    while (current->head != ptr)
     {
-        unmap_large_chunk(&g_heap.large, current);
-        return;
+        prev = current;
+        current = current->next;
+        if (current->next == NULL)
+            return ;
     }
+    prev->next = current->next;
+    unmap_large_chunk(&g_heap.large, current);g
 }
 
 void free(void *ptr)
