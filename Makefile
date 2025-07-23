@@ -1,6 +1,6 @@
-# Compiler and flags
+# Compiler and Cflags
 CC = gcc
-FLAGS = -Wall -Werror -Wextra -fPIC
+CFLAGS = -Wall -Werror -Wextra -fPIC -g
 
 LIBFT = Libft/libft.a
 
@@ -32,11 +32,11 @@ EXECUTABLE = main
 
 # Default target: build shared lib + symlink
 all: libcomp $(NAME) $(EXECUTABLE)
-	
+
 
 # Build shared library
 $(NAME): $(OBJS)
-	$(CC) $(SHARED_FLAG) -o $@ $^ $(LIBFT)
+	$(CC) -g -w -Wno-unused-result $(SHARED_FLAG) -o $@ $^ $(LIBFT)
 	ln -sf $(NAME) $(LNAME)
 
 libcomp:
@@ -44,7 +44,7 @@ libcomp:
 
 # Compile .c files to .o in current dir
 %.o: src/%.c
-	$(CC) $(FLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Optional: build test executable
 $(EXECUTABLE): $(OBJS)
@@ -63,7 +63,7 @@ libfclean:
 # Full clean: includes library and executable
 fclean: libfclean clean
 	rm -f $(NAME) $(LNAME) $(EXECUTABLE)
-	rm *.test
+	rm -f *.test
 
 # Rebuild everything
 re: fclean all

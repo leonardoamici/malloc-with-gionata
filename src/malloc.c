@@ -13,11 +13,6 @@ t_chunk *last_chunk(t_page *page)
     return temp;
 }
 
-static inline size_t align16(size_t size) 
-{
-    return (size + 15) & ~((size_t)15);
-}
-
 void *split_chunks(t_page *page, size_t allocation)
 {
     if (allocation == 0)
@@ -106,7 +101,7 @@ void *sort_allocations(t_heap *heap, size_t size)
         return (split_chunks(&heap->small, size));
     return (split_chunks(&heap->tiny, size));
 }
- 
+
 void *calloc(size_t nmemb, size_t size)
 {
     void *ptr;
@@ -124,16 +119,20 @@ void *calloc(size_t nmemb, size_t size)
 void *malloc(size_t size)
 {
     void *new_alloc;
-    
+
     pthread_mutex_lock(&g_heap.mutex);
-    
+
     new_alloc = sort_allocations(&g_heap, size);
-    
-    ft_printf("malloc called with size ");
-    print_size_t(size);
-    ft_printf(" and returned ptr = %p \n", new_alloc);
+
+    //ft_printf("malloc called with size ");
+    //print_size_t(size);
+    //ft_printf(" and returned ptr = %p \n", new_alloc);
+
+    //ft_printf_fd(2, "malloc(%d): %p\n", size, new_alloc);
 
     pthread_mutex_unlock(&g_heap.mutex);
+
+    //show_alloc_mem();
 
     return (new_alloc);
 }
