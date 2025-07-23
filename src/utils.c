@@ -56,3 +56,8 @@ void *check_available_alloc(void *ptr)
         return (find_ptr(ptr, g_heap.large));
     }
 }
+
+size_t align16(size_t size)
+{
+    return (size + 15) & ~((size_t)15);
+}

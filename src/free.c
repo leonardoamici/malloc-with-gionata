@@ -35,7 +35,7 @@ void sort_free(void *ptr)
 {
     t_chunk *current = g_heap.tiny.head;
     while (current)
-    {   
+    {
         if (current->head == ptr)
         {
             current->available = 1;
@@ -48,7 +48,7 @@ void sort_free(void *ptr)
 
     current = g_heap.small.head;
     while (current)
-    {   
+    {
         if (current->head == ptr)
         {
             current->available = 1;
@@ -59,18 +59,21 @@ void sort_free(void *ptr)
         current = current->next;
     }
 
-    
+
     current = g_heap.large;
     t_chunk *prev = NULL;
-    while (current->head != ptr)
+    while (current && current->head != ptr)
     {
         prev = current;
         current = current->next;
         if (current->next == NULL)
             return ;
     }
-    prev->next = current->next;
-    unmap_large_chunk(&g_heap.large, current);
+    if (current && current == ptr)
+    {
+        prev->next = current->next;
+        unmap_large_chunk(&g_heap.large, current);
+    }
 }
 
 void free(void *ptr)
@@ -79,10 +82,11 @@ void free(void *ptr)
         return;
     pthread_mutex_lock(&g_heap.mutex);
 
-    ft_printf("free called on ptr %p\n", ptr);
+    //ft_printf_fd(2, "free called on ptr %p\n", ptr);
+    //ft_printf_fd(2, "free((void *)%p)\n", ptr);
     //ft_printf("free called on ptr %p\n", ptr);
     sort_free(ptr);
-    
+
     pthread_mutex_unlock(&g_heap.mutex);
     //ft_printf("free exiting\n");
 }

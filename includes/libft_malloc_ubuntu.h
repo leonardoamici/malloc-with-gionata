@@ -57,6 +57,7 @@ void init_heap(void);
 void *check_available_alloc(void *ptr);
 void print_hexa_dump(void *ptr);
 void print_size_t(size_t n);
+size_t align16(size_t size);
 
 extern t_heap g_heap;
 

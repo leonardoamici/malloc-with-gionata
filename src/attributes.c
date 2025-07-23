@@ -33,6 +33,8 @@ void init_allocation(t_page *pages, int size, int type)
 }
 
 void __attribute__((constructor, used)) initialize_heap() {
+    if (g_heap.initialized)
+        return;
     init_allocation(&g_heap.tiny, calculate_impaginations(TINY_ALLOC), TINY);
     init_allocation(&g_heap.small, calculate_impaginations(SMALL_ALLOC), SMALL);
     pthread_mutex_init(&g_heap.mutex, NULL);
@@ -41,7 +43,7 @@ void __attribute__((constructor, used)) initialize_heap() {
 }
 
 void __attribute__((destructor, used)) destroy_heap() {
-   
+
     munmap(g_heap.tiny.heap, TINY_ALLOC);
     munmap(g_heap.small.heap, SMALL_ALLOC);
 
@@ -50,7 +52,7 @@ void __attribute__((destructor, used)) destroy_heap() {
     while (g_heap.large)
     {
         temp = (void *)g_heap.large->next;
-        munmap(g_heap.large->head, g_heap.large->size);
+        munmap(g_heap.large->head, g_heap.large->size + sizeof(t_chunk));
         g_heap.large = (t_chunk *)temp;
     }
 }

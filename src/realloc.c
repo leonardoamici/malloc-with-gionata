@@ -31,7 +31,6 @@ void *switch_allocation_type(t_chunk *alloc, size_t size)
     //free(alloc->head);
     return (new_alloc);
 }
-
 void *resize_allocation(t_chunk *alloc, size_t size)
 {
 
@@ -80,7 +79,9 @@ void *realloc(void *ptr, size_t size)
     new_mem = NULL;
     pthread_mutex_lock(&g_heap.mutex);
 
-    ft_printf("realloc called on %p \n", ptr);
+    size = align16(size);
+    //ft_printf_fd(2, "realloc((void *)%p, %d)\n", ptr, size);
+    //ft_printf("realloc called on %p \n", ptr);
     if (ptr == NULL)
     {
         new_mem = sort_allocations(&g_heap, size);
@@ -89,11 +90,13 @@ void *realloc(void *ptr, size_t size)
     }
 
     alloc = check_available_alloc(ptr);
-    if (alloc != NULL)
+    
+    if (alloc != NULL && alloc->size != size)
     {
         new_mem = select_mapping(alloc, size);
         pthread_mutex_unlock(&g_heap.mutex);
-        free(alloc->head);
+        if (alloc->head != new_mem)
+            free(alloc->head);
         return (new_mem);
     }
     pthread_mutex_unlock(&g_heap.mutex);
