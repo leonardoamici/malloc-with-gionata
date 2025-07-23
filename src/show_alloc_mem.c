@@ -1,6 +1,6 @@
 #include "../includes/libft_malloc_ubuntu.h"
 
-t_heap g_heap;
+extern t_heap g_heap;
 
 unsigned int print_memories(t_chunk *page, char *str)
 {
@@ -38,7 +38,7 @@ unsigned int print_memories_ex(t_chunk *page, char *str)
 
     allocation_size = 0;
     if (!page)
-    {
+    {   
         ft_printf("%s : No memory allocated\n", str);
         return 0;
     }

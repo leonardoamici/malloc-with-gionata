@@ -1,6 +1,6 @@
 #include "../includes/libft_malloc_ubuntu.h"
 
-t_heap g_heap;
+extern t_heap g_heap;
 
 void print_size_t(size_t n) 
 {

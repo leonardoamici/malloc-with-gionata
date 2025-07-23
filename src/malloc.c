@@ -38,7 +38,7 @@ void *split_chunks(t_page *page, size_t allocation)
         }
         temp = temp->next;
     }
-    //ft_printf("effective allocation = %d\n", allocation);
+
     if (!best)
         return NULL;
 
@@ -86,7 +86,7 @@ void *big_allocation(size_t allocation_size)
     new_chunk->available = 0;
     new_chunk->type = LARGE;
 
-    // Insert into the global large list
+
     if (!g_heap.large) {
         g_heap.large = new_chunk;
     } else {
@@ -127,46 +127,13 @@ void *malloc(size_t size)
     
     pthread_mutex_lock(&g_heap.mutex);
     
-   // ft_printf("malloc called with size %z \n", size);
-    
     new_alloc = sort_allocations(&g_heap, size);
+    
+    ft_printf("malloc called with size ");
+    print_size_t(size);
+    ft_printf(" and returned ptr = %p \n", new_alloc);
 
     pthread_mutex_unlock(&g_heap.mutex);
 
-    //ft_printf("returned ptr %p \n", new_alloc);
-
     return (new_alloc);
 }
-
-
-/*int main()
-{
-    char *str = "string\n";
-
-    char *str2 = malloc(10);
-
-    int i = 0;
-
-    for (int j = 0; j < 500; j++)
-    {
-        str2 = malloc(450);
-    }
-    if (str2 == NULL)
-        return (0);
-    write(1, "here\n", 5);
-    while(str[i])
-    {
-        str2[i] = str[i];
-        i++;
-    }
-    str2[i] = '\0';
-    write(1, str2, 7);
-}*/
-
-//for large, anything bigger than medium. this isn't preallocated
-
-//algo that splits chunks based on required memory 
-
-//when memory is given it has to be aligned (check with % 16 == 0)
-
-//another list that tracks the ammount of allocs and their size and their start (maybe for frees as well)

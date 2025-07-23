@@ -61,7 +61,7 @@ void sort_free(void *ptr)
 
     
     current = g_heap.large;
-    prev = NULL
+    t_chunk *prev = NULL;
     while (current->head != ptr)
     {
         prev = current;
@@ -70,7 +70,7 @@ void sort_free(void *ptr)
             return ;
     }
     prev->next = current->next;
-    unmap_large_chunk(&g_heap.large, current);g
+    unmap_large_chunk(&g_heap.large, current);
 }
 
 void free(void *ptr)
@@ -79,6 +79,7 @@ void free(void *ptr)
         return;
     pthread_mutex_lock(&g_heap.mutex);
 
+    ft_printf("free called on ptr %p\n", ptr);
     //ft_printf("free called on ptr %p\n", ptr);
     sort_free(ptr);
     

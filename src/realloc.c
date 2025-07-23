@@ -80,6 +80,7 @@ void *realloc(void *ptr, size_t size)
     new_mem = NULL;
     pthread_mutex_lock(&g_heap.mutex);
 
+    ft_printf("realloc called on %p \n", ptr);
     if (ptr == NULL)
     {
         new_mem = sort_allocations(&g_heap, size);

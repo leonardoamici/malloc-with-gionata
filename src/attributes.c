@@ -18,6 +18,10 @@ void init_allocation(t_page *pages, int size, int type)
     void *mem = NULL;
 
     mem = mmap(NULL, sysconf(_SC_PAGESIZE) * size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (mem == MAP_FAILED) {
+        write(2, "failed to map memory\n", 22);
+        exit(1);
+    }
     pages->heap = (t_page*)mem;
     pages->head = (t_chunk *)(pages)->heap;
     pages->head->head = (void *)((char *)(pages)->heap + sizeof(t_chunk));
