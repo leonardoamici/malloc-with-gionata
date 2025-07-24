@@ -2,6 +2,9 @@
 
 int main(int ac, char **av, char **envp)
 {
-    execve("/bin/clear", (char **){NULL}, envp);
+    void *a;
+    a = malloc(10);
+    a = realloc(a, 19);
+    free(a);
     return 0;
 }

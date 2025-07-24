@@ -18,7 +18,7 @@ unsigned int print_memories(t_chunk *page, char *str)
 
     ft_printf("%s : %p\n", str, page);
 
-    while (temp)
+    while (temp && temp->next)
     {
         if (!temp->freed)
         {

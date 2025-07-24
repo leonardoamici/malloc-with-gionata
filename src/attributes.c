@@ -43,9 +43,9 @@ void __attribute__((constructor, used)) initialize_heap() {
 }
 
 void __attribute__((destructor, used)) destroy_heap() {
-
-    munmap(g_heap.tiny.heap, TINY_ALLOC);
-    munmap(g_heap.small.heap, SMALL_ALLOC);
+    
+    munmap(g_heap.tiny.heap,  calculate_impaginations(TINY_ALLOC) * 500);
+    munmap(g_heap.small.heap, calculate_impaginations(SMALL_ALLOC) * 500);
 
     void *temp;
 

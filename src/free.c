@@ -82,11 +82,7 @@ void free(void *ptr)
         return;
     pthread_mutex_lock(&g_heap.mutex);
 
-    //ft_printf_fd(2, "free called on ptr %p\n", ptr);
-    //ft_printf_fd(2, "free((void *)%p)\n", ptr);
-    //ft_printf("free called on ptr %p\n", ptr);
     sort_free(ptr);
 
     pthread_mutex_unlock(&g_heap.mutex);
-    //ft_printf("free exiting\n");
 }
